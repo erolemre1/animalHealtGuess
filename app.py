@@ -4,10 +4,9 @@ import base64
 import os
 import shutil
 import requests
+import gc
 
 app = Flask(__name__)
-
-model = YOLO("best.pt")
 
 def delete_runs_folder(folder_path="runs"):
     if os.path.exists(folder_path):
@@ -48,18 +47,24 @@ def predict():
         if not image_path:
             return jsonify({"error": "Resim indirilemedi"}), 400
 
+        model = YOLO("best.pt")
         model.predict(source=image_path, save=True)
 
         latest_folder = get_latest_predict_folder()
         if not latest_folder:
             return jsonify({"error": "Predict klasörü bulunamadı"}), 404
+
         image_files = [f for f in os.listdir(latest_folder) if f.endswith((".jpg", ".png"))]
         if not image_files:
             return jsonify({"error": "Predict klasöründe resim bulunamadı"}), 404
+        
         file_path = os.path.join(latest_folder, image_files[0])
 
         with open(file_path, "rb") as file:
             encoded_string = base64.b64encode(file.read()).decode("utf-8")
+
+        del model
+        gc.collect()
 
         return jsonify({"file_base64": encoded_string})
 
