@@ -12,7 +12,7 @@ def delete_runs_folder(folder_path="runs"):
 model = YOLO("best.pt")
 
 delete_runs_folder()
-model.predict(source="26.jpg", save=True)
+model.predict(source="25.jpg", save=True)
 
 app = Flask(__name__)
 
