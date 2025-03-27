@@ -34,6 +34,8 @@ def download_image_from_drive(drive_url, save_path="input.jpg"):
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    print("İstek alındı!")
+    print(request.json)  
     try:
         data = request.get_json()
         if not data or "image_url" not in data:
@@ -66,7 +68,9 @@ def predict():
         del model
         gc.collect()
 
-        return jsonify({"file_base64": encoded_string})
+        # return jsonify({"file_base64": encoded_string})
+        return jsonify({"message": "Test yanıtı"}), 200
+
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
